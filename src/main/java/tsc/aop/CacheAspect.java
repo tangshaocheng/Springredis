@@ -7,6 +7,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -16,14 +17,15 @@ import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 
 import tsc.redis.IBaseRedisDao;
 @Aspect
 @Component
 public class CacheAspect {
 //	@Autowired
+//	@Qualifier("redisTemplate")
 //	private RedisTemplate<?, ?> redisTemplate;
+//	private RedisSerializer<Object> defaultSerializer = new JdkSerializationRedisSerializer();
 	@Autowired
 	private IBaseRedisDao<Object, Object> baseRedisDao;
 	@Around("@annotation(Cacheable)")
@@ -35,15 +37,13 @@ public class CacheAspect {
 		String key = parseKey(cacheable.key(), method, pjp.getArgs());
 		String fieldKey = parseKey(cacheable.fieldKey(), method, pjp.getArgs());
 
-//		HashOperations valueOper = redisTemplate.opsForHash();
-//		result = valueOper.get(key, fieldKey);
+		//HashOperations valueOper = redisTemplate.opsForHash();
 		result =baseRedisDao.hget(key,fieldKey);
 		if (result == null) {
 			try {
 				result = pjp.proceed();
 				//Assert.notNull(fieldKey);
-				// redisTemplate.hset(cacheable.key(), fieldKey, result);
-				//valueOper.put(key, fieldKey, result);
+				//valueOper.put(key, fieldKey, defaultSerializer.serialize(result));
 				baseRedisDao.hset(key,fieldKey,result);
 			} catch (Throwable e) {
 				e.printStackTrace();
