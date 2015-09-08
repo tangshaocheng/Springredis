@@ -2,6 +2,7 @@ package tsc.dao.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import tsc.aop.Cacheable;
 import tsc.dao.IUserDao;
 import tsc.entity.User;
 import tsc.redis.IBaseRedisDao;
@@ -22,7 +23,6 @@ public class UserDAOImpl implements IUserDao {
 		user.setId(id);
 		user.setName((String) baseRedisDao.get("user.uid." + id));
 		return user;
-
 	}
 
 	@Override
@@ -42,12 +42,14 @@ public class UserDAOImpl implements IUserDao {
 	}
 
 	@Override
+	@Cacheable(key = "#user.getAge()", fieldKey = "#user.getName()", expireTime = 3600)
 	public User getUserBySet(User user) {
 		// TODO Auto-generated method stub
 		// User user = new User();
+		System.out.println("查询数据库");
 		user.setId(user.getId());
 		user.setName(user.getName());
-		user.setCity((String) baseRedisDao.hget(user.getAge(), user.getName()));
+		user.setCity("sh11");
 		return user;
 	}
 }

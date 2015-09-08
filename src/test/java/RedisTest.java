@@ -18,16 +18,16 @@ public class RedisTest {
 		// userDao.saveUser(user1);
 		// userDao.del(1);
 		// System.out.println(userDao.exists(1));
-		// User user2 = userDao.getUser(3);
+		// User user2 = userDao.getUser(1);
 		// System.out.println(user2.getName());
 		User user = new User();
-		user.setId(5);
+		// user.setId(5);
 		user.setName("tom");
 		user.setAge("20");
 		// user.setCity("sh");
 		// userDao.saveUserBySet(user);
-		userDao.getUserBySet(user);
-		System.out.println(user.getAge());
+		User u = userDao.getUserBySet(user);
+		System.out.println(u.getCity());
 	}
 
 }
